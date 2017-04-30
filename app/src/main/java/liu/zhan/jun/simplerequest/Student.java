@@ -6,7 +6,7 @@ import liu.zhan.jun.simplerequest.comerequest.ComeRequestIn;
  * Created by 刘展俊 on 2017/4/29.
  */
 
-public class Student implements ComeRequestIn.RequestModel<Student> {
+public class Student implements ComeRequestIn.RequestModel {
     private Integer ID;
     private String name;
     private Integer age;

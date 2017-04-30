@@ -1,5 +1,6 @@
 package liu.zhan.jun.simplerequest.comerequest;
 
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -7,8 +8,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,10 +30,14 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static android.R.attr.foreground;
+import static android.R.attr.type;
 
 
 /**
@@ -57,13 +64,13 @@ public enum  ComeRequest implements ComeRequestIn {
     private static final String PROTOCOL_CONTENT_TYPE_FORM = String.format(
             "application/x-www-form-urlencoded; charset=%s",
             new Object[]{PROTOCOL_CHARSET});
-    // 默认mediatype类型
-    private MediaType type;
+
     public static final String TAG="ComeRequest";
     private OkHttpClient client;
     private OkHttpClient.Builder okClientBuilder;
     private HashMap<String,String> GlobalHeads;
     private HashMap<String,String> CountHeads;
+    private ArrayMap<String,File> upFiles;
     private ComeRequest() {
         okClientBuilder=new OkHttpClient.Builder();
         mGson=new Gson();
@@ -73,13 +80,11 @@ public enum  ComeRequest implements ComeRequestIn {
         if (client==null) {
             client = okClientBuilder.build();
         }
-        type=MediaType.parse(PROTOCOL_CONTENT_TYPE_FORM);
+
         return client;
     }
 
-    public void setType(MediaType type) {
-        this.type = type;
-    }
+
 
     /*
             全局设置heads
@@ -115,6 +120,9 @@ public enum  ComeRequest implements ComeRequestIn {
                 break;
             case POST:
                 post(builder,model);
+                break;
+            case Upload:
+                upload(builder,model);
                 break;
         }
         //添加header
@@ -198,7 +206,39 @@ public enum  ComeRequest implements ComeRequestIn {
 
     }
     private void post(Request.Builder builder,RequestModel model) {
+        MediaType type=MediaType.parse(PROTOCOL_CONTENT_TYPE_FORM);
         RequestBody body=RequestBody.create(type,getBody(model));
+        builder.post(body);
+
+    }
+
+    private void upload(Request.Builder builder,RequestModel model) {
+        MultipartBody.Builder multbuild=new MultipartBody.Builder().setType(MultipartBody.FORM);
+        ///                .addPart(
+//                        Headers.of("Content-Disposition", "form-data; name=\"file\"; filename=\"" + fileName + "\""),
+//                        RequestBody.create(MEDIA_TYPE_PNG, file))
+//                .addPart(
+//                        Headers.of("Content-Disposition", "form-data; name=\"imagetype\""),
+//                        RequestBody.create(null, imageType))
+//                .addPart(
+//                        Headers.of("Content-Disposition", "form-data; name=\"userphone\""),
+//                        RequestBody.create(null, userPhone))
+        Set keys=upFiles.keySet();
+        Iterator it = keys.iterator();
+        while (it.hasNext()){
+            String key= (String) it.next();
+            File file=upFiles.get(key);
+            multbuild.addFormDataPart(key,file.getName(),RequestBody.create(MultipartBody.FORM,file));
+        }
+        HashMap<String, String> modelmap = jsonToMap(model);
+        Set<String> mkeys = modelmap.keySet();
+        Iterator<String> mit = mkeys.iterator();
+        while (mit.hasNext()){
+            String mkey=mit.next();
+            String value=modelmap.get(mkey);
+            multbuild.addFormDataPart(mkey,value);
+        }
+        MultipartBody body = multbuild.build();
         builder.post(body);
 
     }
@@ -211,6 +251,62 @@ public enum  ComeRequest implements ComeRequestIn {
     public void requestPost(String url, RequestModel model,RequestCallBack callback) {
         request(requestMode.POST,url,model,callback);
     }
+
+    /**
+     *
+     * @return
+     * @see
+     */
+    @Override
+    public ComeRequestIn prepareUpload() {
+        if (null!=upFiles){
+            upFiles.clear();
+            upFiles=null;
+        }
+        upFiles=new ArrayMap<String,File>();
+        return this;
+    }
+
+    /**
+     *
+     * @param name 表单对应的name
+     * @param file
+     * @see ComeRequest#prepareUpload() 使用前必须调用此方法
+     * @return
+     */
+    @Override
+    public ComeRequestIn addFile(String name, File file) {
+        upFiles.put(name,file);
+        return this;
+    }
+
+    /**
+     *
+     * @param name 表单对应的name
+     * @param files
+     * @see ComeRequest#prepareUpload() 使用前必须调用此方法
+     * @return
+     */
+    @Override
+    public ComeRequestIn addFiles(String name, ArrayList<File> files) {
+        for (File file: files) {
+            upFiles.put(name,file);
+        }
+        return this;
+    }
+
+    /**
+     *
+     * @param url
+     * @param callback
+     * @see ComeRequest#addFile(java.lang.String, java.io.File) or liu.zhan.jun.simplerequest.comerequest.ComeRequest#addFiles(java.lang.String, java.util.ArrayList)
+     * 使用前必须调用上面任意一个方法
+     */
+    @Override
+    public void upLoadFile(String url,RequestModel model, RequestCallBack callback) {
+        request(requestMode.Upload,url,model,callback);
+    }
+
 
 
 
@@ -366,7 +462,7 @@ public enum  ComeRequest implements ComeRequestIn {
 
 
     public  enum requestMode{
-        GET,POST,PUT,DELETE
+        GET,POST,Upload,DELETE
     }
 
 

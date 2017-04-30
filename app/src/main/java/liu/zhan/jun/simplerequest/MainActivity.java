@@ -1,17 +1,25 @@
 package liu.zhan.jun.simplerequest;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxAdapterView;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private Context mContext;
     private ProgressDialog dialog;
     private Button button;
+    private View button2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +55,19 @@ public class MainActivity extends AppCompatActivity {
 
         textView= (TextView) findViewById(R.id.textView);
         button= (Button) findViewById(R.id.btn_request);
+        button2=findViewById(R.id.btn_upload);
         RxView.clicks(button).subscribe(new Consumer<Object>() {
             @Override
             public void accept(@NonNull Object o) throws Exception {
                 request();
             }
         });
-
+        RxView.clicks(button2).subscribe(new Consumer<Object>() {
+            @Override
+            public void accept(@NonNull Object s) throws Exception {
+                uploadFile();
+            }
+        });
 
 
     }
@@ -62,6 +77,45 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         ComeRequest.request.unsubcribe();
     }
+
+    private void uploadFile(){
+        Student student=new Student();
+        student.setID(1000);
+        student.setAge(39);
+        student.setName("赵云");
+        File file=new File(Environment.getExternalStorageDirectory()+"/Download");
+        Log.i(TAG, "uploadFile: file===="+file.exists());
+        ComeRequest.request
+                .prepareUpload()
+                .addFile("mimg1",new File(file.getAbsolutePath()+"/22.jpg"))
+                .addFile("mimg2",new File(file.getAbsolutePath()+"/33.jpg"))
+                .upLoadFile("http://192.168.1.101:8080/DemoServlet/HelloWorldServlet", student, new RequestCallBack<String>() {
+                    @Override
+                    public void before() {
+                        Log.i(TAG, "before: 开始上传");
+                    }
+
+                    @Override
+                    public void success(String result) {
+                        Log.i(TAG, "success: ========"+result);
+                    }
+
+                    @Override
+                    public void failure(ComeRequest.NetThrowable error) {
+                        Log.i(TAG, "failure: ==========="+error.getMessage());
+                    }
+
+                    @Override
+                    public void finish() {
+                        Log.i(TAG, "finish: 请求完成");
+                    }
+                });
+    }
+
+
+
+
+
 
     private void request() {
         Student student=new Student();
