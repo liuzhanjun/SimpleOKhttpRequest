@@ -234,12 +234,14 @@ public enum  ComeRequest implements ComeRequestIn {
             multbuild.addFormDataPart(key,file.getName(),RequestBody.create(MultipartBody.FORM,file));
         }
         HashMap<String, String> modelmap = jsonToMap(model);
-        Set<String> mkeys = modelmap.keySet();
-        Iterator<String> mit = mkeys.iterator();
-        while (mit.hasNext()){
-            String mkey=mit.next();
-            String value=modelmap.get(mkey);
-            multbuild.addFormDataPart(mkey,value);
+        if (null!=modelmap) {
+            Set<String> mkeys = modelmap.keySet();
+            Iterator<String> mit = mkeys.iterator();
+            while (mit.hasNext()) {
+                String mkey = mit.next();
+                String value = modelmap.get(mkey);
+                multbuild.addFormDataPart(mkey, value);
+            }
         }
         MultipartBody mbody = multbuild.build();
         //包装进度body
