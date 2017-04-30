@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -29,12 +30,14 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.http.CallServerInterceptor;
 
 import static android.R.attr.foreground;
 import static android.R.attr.type;
@@ -122,7 +125,7 @@ public enum  ComeRequest implements ComeRequestIn {
                 post(builder,model);
                 break;
             case Upload:
-                upload(builder,model);
+                upload(builder,model,callback);
                 break;
         }
         //添加header
@@ -212,7 +215,7 @@ public enum  ComeRequest implements ComeRequestIn {
 
     }
 
-    private void upload(Request.Builder builder,RequestModel model) {
+    private void upload(Request.Builder builder,RequestModel model,RequestCallBack callBack) {
         MultipartBody.Builder multbuild=new MultipartBody.Builder().setType(MultipartBody.FORM);
         ///                .addPart(
 //                        Headers.of("Content-Disposition", "form-data; name=\"file\"; filename=\"" + fileName + "\""),
@@ -238,9 +241,10 @@ public enum  ComeRequest implements ComeRequestIn {
             String value=modelmap.get(mkey);
             multbuild.addFormDataPart(mkey,value);
         }
-        MultipartBody body = multbuild.build();
+        MultipartBody mbody = multbuild.build();
+        //包装进度body
+        ProgressRequestBody body=new ProgressRequestBody(mbody,disposables,callBack);
         builder.post(body);
-
     }
     /**
      * post请求

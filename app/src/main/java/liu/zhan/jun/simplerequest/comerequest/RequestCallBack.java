@@ -14,6 +14,9 @@ public abstract class RequestCallBack <T> {
     public abstract void success(T result);
     public abstract void failure(ComeRequest.NetThrowable error);
     public abstract void finish();
+    public void progress(long currentByte,long countByte){
+
+    }
     private Type mType;
 
     public Type getmType() {

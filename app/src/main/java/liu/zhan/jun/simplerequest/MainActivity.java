@@ -21,6 +21,7 @@ import com.jakewharton.rxbinding2.widget.RxAdapterView;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 .prepareUpload()
                 .addFile("mimg1",new File(file.getAbsolutePath()+"/22.jpg"))
                 .addFile("mimg2",new File(file.getAbsolutePath()+"/33.jpg"))
+                .addFile("mov",new File(Environment.getExternalStorageDirectory()+"/Movies/yuv_cuc_ieschool.yuv"))
                 .upLoadFile("http://192.168.1.101:8080/DemoServlet/HelloWorldServlet", student, new RequestCallBack<String>() {
                     @Override
                     public void before() {
@@ -108,6 +110,17 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void finish() {
                         Log.i(TAG, "finish: 请求完成");
+                    }
+
+                    @Override
+                    public void progress(long currentByte, long countByte) {
+                        long id=Thread.currentThread().getId();
+                        Log.i(TAG, "progress: currentByte="+currentByte+"===progress="+countByte+"threadID="+id);
+                        DecimalFormat format=new DecimalFormat("0.00");
+                        double bfb=(1.0*currentByte/countByte)*100;
+                        Log.i(TAG, "progress: bfb===="+bfb);
+                        String sult=format.format(bfb);
+                        textView.setText(sult+"%");
                     }
                 });
     }
