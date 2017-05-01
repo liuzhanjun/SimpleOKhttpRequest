@@ -30,6 +30,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.Call;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -57,6 +58,7 @@ public enum  ComeRequest implements ComeRequestIn {
 
     private final CompositeDisposable disposables = new CompositeDisposable();
     private Gson mGson;
+    private Subscribe subscribe;
 
     public abstract ComeRequest getInstance();
     public static final int DEFAULT_MILLISECONDS = 60000;       //默认的超时时间
@@ -74,6 +76,7 @@ public enum  ComeRequest implements ComeRequestIn {
     private HashMap<String,String> GlobalHeads;
     private HashMap<String,String> CountHeads;
     private ArrayMap<String,File> upFiles;
+    private Object tag;
     private ComeRequest() {
         okClientBuilder=new OkHttpClient.Builder();
         mGson=new Gson();
@@ -113,9 +116,16 @@ public enum  ComeRequest implements ComeRequestIn {
         this.CountHeads.putAll(heads);
 
     }
+    public ComeRequest setTag(Object tag){
+            this.tag=tag;
+            return this;
+    }
 
     private <T> void request(requestMode mode, String url, RequestModel model, final RequestCallBack<T> callback){
         Request.Builder builder= new Request.Builder();
+        if (null!=tag){
+            builder.tag(tag);
+        }
         builder.url(url);
         switch (mode){
             case GET:
@@ -138,7 +148,7 @@ public enum  ComeRequest implements ComeRequestIn {
             }
         }
         Request request=builder.build();
-        Subscribe subscribe=new Subscribe();
+        subscribe=new Subscribe();
         subscribe.setRequest(request);
         disposables.add(Observable.create(subscribe)
                 .subscribeOn(Schedulers.io())
@@ -198,11 +208,26 @@ public enum  ComeRequest implements ComeRequestIn {
     }
 
     /**
-     * 取消订阅
+     * 取消订阅在activity中onPause 或者onDestory调用即可，不能在cancle之前调用
      */
     public void unsubcribe(){
         disposables.clear();
     }
+
+    public void cancel(Object tag){
+
+        Call call=subscribe.getCall();
+        if (null!=call){
+            Object rTag=call.request().tag();
+            if (tag.equals(rTag)){
+                call.cancel();
+            }
+        }
+    }
+    /**
+     *
+     * @param builder
+     */
 
     private void get(Request.Builder builder) {
         builder.get();
@@ -245,7 +270,12 @@ public enum  ComeRequest implements ComeRequestIn {
         }
         MultipartBody mbody = multbuild.build();
         //包装进度body
-        ProgressRequestBody body=new ProgressRequestBody(mbody,disposables,callBack);
+        ProgressRequestBody body= null;
+        try {
+            body = new ProgressRequestBody(mbody,disposables,callBack);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         builder.post(body);
     }
     /**
@@ -474,29 +504,44 @@ public enum  ComeRequest implements ComeRequestIn {
 
     public static class Subscribe implements ObservableOnSubscribe<String>{
         private Request request;
+        private Call call;
+
         public void setRequest(Request request) {
             this.request = request;
 
         }
+        public Call getCall(){
+            return call;
+        }
         @Override
-        public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+        public void subscribe(@NonNull ObservableEmitter<String> e){
             long id=Thread.currentThread().getId();
             Log.i(TAG, "onResponse: currentThreadId================="+id);
             OkHttpClient client=ComeRequest.request.getClient();
-            Response response = client.newCall(request).execute();
-            String result=response.body().string();
-            Log.i(TAG, "subscribe: result="+result);
-            String requestString=response.request().toString();
-            Log.i(TAG, "subscribe: requestString==="+requestString);
-            int code = response.code();
-            if (code>=200&&code<300){
-                e.onNext(result);
-            }else{
-                NetThrowable throwable=new NetThrowable("request Fail code="+code);
-                throwable.setStatus(code);
-                throwable.setRequestString(requestString);
+            call=client.newCall(request);
+            try {
+                Response response=response = call.execute();
+                String result= response.body().string();
+                Log.i(TAG, "subscribe: result="+result);
+                String requestString=response.request().toString();
+                Log.i(TAG, "subscribe: requestString==="+requestString);
+                int code = response.code();
+                if (code>=200&&code<300){
+                    e.onNext(result);
+                }else{
+                    NetThrowable throwable=new NetThrowable("request Fail code="+code);
+                    throwable.setStatus(code);
+                    throwable.setRequestString(requestString);
+                    e.onError(throwable);
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+                NetThrowable throwable=new NetThrowable(e1.getMessage());
+                throwable.setStatus(-1);
+                throwable.setRequestString(e1.getMessage());
                 e.onError(throwable);
             }
+
 
             e.onComplete();
         }
