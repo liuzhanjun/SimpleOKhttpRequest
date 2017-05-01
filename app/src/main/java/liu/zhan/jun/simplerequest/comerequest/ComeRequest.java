@@ -9,7 +9,9 @@ import com.google.gson.JsonObject;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -38,10 +40,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.http.CallServerInterceptor;
+import okhttp3.ResponseBody;
 
-import static android.R.attr.foreground;
-import static android.R.attr.type;
 
 
 /**
@@ -185,15 +185,7 @@ public enum  ComeRequest implements ComeRequestIn {
 
                     @Override
                     public void onError(Throwable e) {
-                        NetThrowable throwable;
-                        if (e instanceof NetThrowable){
-                            throwable= (NetThrowable) e;
-                        }else{
-                            throwable=new NetThrowable(e.getMessage());
-                            throwable.setStackTrace(e.getStackTrace());
-
-                        }
-                        callback.failure(throwable);
+                        error(e, callback);
 
                     }
 
@@ -205,7 +197,21 @@ public enum  ComeRequest implements ComeRequestIn {
 
 
 
+
     }
+
+    private <T> void error(Throwable e, RequestCallBack<T> callback) {
+        NetThrowable throwable;
+        if (e instanceof NetThrowable){
+            throwable= (NetThrowable) e;
+        }else{
+            throwable=new NetThrowable(e.getMessage());
+            throwable.setStackTrace(e.getStackTrace());
+
+        }
+        callback.failure(throwable);
+    }
+
 
     /**
      * 取消订阅在activity中onPause 或者onDestory调用即可，不能在cancle之前调用
@@ -215,6 +221,9 @@ public enum  ComeRequest implements ComeRequestIn {
     }
 
     public void cancel(Object tag){
+        if (subscribe==null){
+            return;
+        }
 
         Call call=subscribe.getCall();
         if (null!=call){
@@ -332,7 +341,7 @@ public enum  ComeRequest implements ComeRequestIn {
     }
 
     /**
-     *
+     *上传文件
      * @param url
      * @param callback
      * @see ComeRequest#addFile(java.lang.String, java.io.File) or liu.zhan.jun.simplerequest.comerequest.ComeRequest#addFiles(java.lang.String, java.util.ArrayList)
@@ -343,7 +352,83 @@ public enum  ComeRequest implements ComeRequestIn {
         request(requestMode.Upload,url,model,callback);
     }
 
+    @Override
+    public void downLoadFile(String url, RequestModel model, final String filepath, final RequestCallBack callback) {
+        if (null!=model){
+            url=RecodeURL(url,model);
+        }
+        Request.Builder builder= new Request.Builder();
+        if (null!=tag){
+            builder.tag(tag);
+        }
+        builder.url(url).get();
 
+        DownLoadSubscribe downsub=new DownLoadSubscribe();
+        downsub.setRequest(builder.build());
+        okClientBuilder.addNetworkInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Response rspons=chain.proceed(chain.request());
+                return rspons.newBuilder().body(new ProgressResponseBody(rspons.body(),disposables,callback)).build();
+            }
+        });
+        disposables.add(Observable.create(downsub)
+                .map(new Function<Response, FileItem>() {
+                    @Override
+                    public FileItem apply(@NonNull Response response) throws Exception {
+                        long id=Thread.currentThread().getId();
+                        Log.i(TAG, "apply: id="+id);
+                        File file=new File(filepath);
+                        FileOutputStream fos=new FileOutputStream(file);
+                        byte[] bytes=new byte[1024];
+                        int readCount=0;
+                        ResponseBody body = response.body();
+                        //获得输入流
+                        InputStream inputStream = body.byteStream();
+                        //获得文件大小
+                        long length = body.contentLength();
+                        //获得文件类型
+                        MediaType type=body.contentType();
+                        Log.i(TAG, "apply: type==="+type.subtype());
+                        while ((readCount=inputStream.read(bytes))!=-1){
+                            fos.write(bytes,0,readCount);
+                            fos.flush();
+                        }
+                        fos.close();
+                        inputStream.close();
+                        FileItem item=new FileItem();
+                        item.setFile(file);
+                        item.setSize(length);
+                        item.setType(type.subtype());
+                        return item;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(@NonNull Disposable disposable) throws Exception {
+                        //这个方法在线程开始前执行，可以作为Progress显示
+                        callback.before();
+                    }
+                })
+                .subscribeWith(new DisposableObserver<FileItem>() {
+                    @Override
+                    public void onNext(FileItem file) {
+                        callback.success(file);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        error(e, callback);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        callback.finish();
+                    }
+                }));
+    }
 
 
     /**
@@ -498,7 +583,47 @@ public enum  ComeRequest implements ComeRequestIn {
 
 
     public  enum requestMode{
-        GET,POST,Upload,DELETE
+        GET,POST,Upload,DOWN_LOAD
+    }
+
+    public static class DownLoadSubscribe implements ObservableOnSubscribe<Response>{
+
+        private Request request;
+        private Call call;
+        public void setRequest(Request request) {
+            this.request = request;
+
+        }
+
+
+        @Override
+        public void subscribe(@NonNull ObservableEmitter<Response> e) throws Exception {
+            long id=Thread.currentThread().getId();
+            Log.i(TAG, "onResponse: currentThreadId================="+id);
+            OkHttpClient client=ComeRequest.request.getClient();
+            call=client.newCall(request);
+            try {
+                Response response=response = call.execute();
+                String requestString=response.request().toString();
+                Log.i(TAG, "subscribe: requestString==="+requestString);
+                int code = response.code();
+                if (code>=200&&code<300){
+                    e.onNext(response);
+                }else{
+                    NetThrowable throwable=new NetThrowable("request Fail code="+code);
+                    throwable.setStatus(code);
+                    throwable.setRequestString(requestString);
+                    e.onError(throwable);
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+                NetThrowable throwable=new NetThrowable(e1.getMessage());
+                throwable.setStatus(-1);
+                throwable.setRequestString(e1.getMessage());
+                e.onError(throwable);
+            }
+            e.onComplete();
+        }
     }
 
 

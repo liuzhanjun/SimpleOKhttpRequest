@@ -1,14 +1,8 @@
 package liu.zhan.jun.simplerequest.comerequest;
-
-import android.util.Log;
-
 import java.io.IOException;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
 import okhttp3.MediaType;
@@ -19,7 +13,6 @@ import okio.ForwardingSink;
 import okio.Okio;
 import okio.Sink;
 
-import static liu.zhan.jun.simplerequest.MainActivity.TAG;
 
 /**
  * Created by 刘展俊 on 2017/4/30.
@@ -28,17 +21,14 @@ import static liu.zhan.jun.simplerequest.MainActivity.TAG;
 public class ProgressRequestBody extends RequestBody {
     //实际的待包装请求体
     private  RequestBody requestBody;
-    private  CompositeDisposable disposable;
-    private RequestCallBack callBack;
     //包装完成的BufferedSink
     private BufferedSink bufferedSink;
 
     private  ProgressObserver observer;
 
+
     public ProgressRequestBody(RequestBody requestBody, CompositeDisposable disposable, final RequestCallBack callBack) {
         this.requestBody = requestBody;
-        this.disposable = disposable;
-        this.callBack=callBack;
         observer=new ProgressObserver();
         disposable.add(Observable.create(observer)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -49,7 +39,10 @@ public class ProgressRequestBody extends RequestBody {
                         String[] sp = o.split(",");
                         long currentByte=Long.parseLong(sp[0]);
                         long countByte=Long.parseLong(sp[1]);
-                        callBack.progress(currentByte,countByte);
+//                        Log.i(TAG, "onNext: currentByte="+currentByte+"===countByte="+countByte);
+                        if (countByte!=0) {
+                            callBack.progress(currentByte, countByte);
+                        }
                     }
 
                     @Override
@@ -101,28 +94,17 @@ public class ProgressRequestBody extends RequestBody {
                 }
                 //增加当前写入的字节数
                 bytesWritten += byteCount;
-                //回调
+
+
+                    //回调
                 observer.update(bytesWritten, contentLength);
+
             }
         };
     }
 
 
-    public static class ProgressObserver implements ObservableOnSubscribe<String>,Progress{
-        private ObservableEmitter<String> e;
-        @Override
-        public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-            this.e=e;
 
-        }
 
-        @Override
-        public void update(long cByte, long countByte) {
-                e.onNext(String.valueOf(cByte+","+countByte));
-        }
-    }
 
-    public interface Progress{
-        public void update(long cByte,long countByte);
-    }
 }

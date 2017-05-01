@@ -18,6 +18,7 @@ public interface ComeRequestIn{
     public  ComeRequestIn addFile(String name,File file);
     public  ComeRequestIn addFiles(String name,ArrayList<File> files);
     public  void upLoadFile(String url,RequestModel model,RequestCallBack callback);
+    public  void downLoadFile(String url,RequestModel model,String filepath,RequestCallBack callback);
 
     public  void requestJson(String json);
 

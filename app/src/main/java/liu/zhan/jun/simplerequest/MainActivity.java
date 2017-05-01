@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -31,6 +33,7 @@ import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import liu.zhan.jun.simplerequest.comerequest.ComeRequest;
+import liu.zhan.jun.simplerequest.comerequest.FileItem;
 import liu.zhan.jun.simplerequest.comerequest.RequestCallBack;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
     private Context mContext;
-//    private ProgressDialog dialog;
+    private ProgressDialog dialog;
     private Button button;
     private Button button_get;
     private View button2;
@@ -68,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
         button= (Button) findViewById(R.id.btn_request);
         button_get= (Button) findViewById(R.id.btn_request_get);
         button2=findViewById(R.id.btn_upload);
-        btn_downLoad= (Button) findViewById(R.id.cancel_btn_download);
+        btn_downLoad= (Button) findViewById(R.id.btn_download);
         cancel_button= (Button) findViewById(R.id.cancel_btn_request);
         cancel_button_get= (Button) findViewById(R.id.cancel_btn_request_get);
         cancel_button2=findViewById(R.id.cancel_btn_upload);
-        cancel_btn_downLoad= (Button) findViewById(R.id.btn_download);
+        cancel_btn_downLoad= (Button) findViewById(R.id.cancel_btn_download);
         //post请求
         RxView.clicks(button).subscribe(new Consumer<Object>() {
             @Override
@@ -178,7 +181,54 @@ public class MainActivity extends AppCompatActivity {
      * 下载
      */
     private void downLoad() {
+        File file=new File(Environment.getExternalStorageDirectory()+"/Download/那些年，我们一起追的女孩.mp4");
+//        File file=new File(Environment.getExternalStorageDirectory()+"/Download/88.jpg");
+        Log.i(TAG, "downLoad: 下载");
+        ComeRequest.request.downLoadFile("http://192.168.1.101:8080/DemoServlet/upload/nxn.mp4", null,file.getAbsolutePath(), new RequestCallBack<FileItem>() {
+            @Override
+            public void before() {
+                Log.i(TAG, "before: 开始下载");
+                //                Log.i(TAG, "before: ======================================");
+                dialog=new ProgressDialog(mContext);
+                dialog.setMessage("正在加载中...");
+                long id=Thread.currentThread().getId();
+                Log.i(TAG, "before: TID="+id);
+                dialog.setProgress(0);
+                dialog.setMax(100);
+                dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                dialog.show();
+            }
 
+            @Override
+            public void success(FileItem result) {
+                Log.i(TAG, "success: 下载成功 type="+result.getType());
+                dialog.setProgress(100);
+            }
+
+            @Override
+            public void failure(ComeRequest.NetThrowable error) {
+                Log.i(TAG, "failure: 下载失败"+error.getMessage());
+                dialog.dismiss();
+            }
+
+            @Override
+            public void progress(long currentByte, long countByte) {
+                long id=Thread.currentThread().getId();
+                Log.i(TAG, "progress: currentByte="+currentByte+"===progress="+countByte+"threadID="+id);
+                DecimalFormat format=new DecimalFormat("0");
+
+                double bfb=(1.0*currentByte/countByte)*100;
+                Log.i(TAG, "progress: bfb===="+bfb);
+                String sult=format.format(bfb);
+                dialog.setProgress(Integer.valueOf(sult));
+            }
+
+            @Override
+            public void finish() {
+                Log.i(TAG, "finish: ");
+                dialog.dismiss();
+            }
+        });
     }
 
     @Override
@@ -210,6 +260,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void before() {
                         Log.i(TAG, "before: 开始上传");
+                        dialog=new ProgressDialog(mContext);
+                        dialog.setMessage("正在加载中...");
+                        long id=Thread.currentThread().getId();
+                        Log.i(TAG, "before: TID="+id);
+                        dialog.setProgress(0);
+                        dialog.setMax(100);
+                        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                        dialog.show();
                     }
 
                     @Override
@@ -220,28 +278,38 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void failure(ComeRequest.NetThrowable error) {
                         Log.i(TAG, "failure: ==========="+error.getMessage());
+                        dialog.dismiss();
                     }
 
                     @Override
                     public void finish() {
                         Log.i(TAG, "finish: 请求完成");
+                        dialog.dismiss();
                     }
 
                     @Override
                     public void progress(long currentByte, long countByte) {
                         long id=Thread.currentThread().getId();
                         Log.i(TAG, "progress: currentByte="+currentByte+"===progress="+countByte+"threadID="+id);
-                        DecimalFormat format=new DecimalFormat("0.00");
+                        DecimalFormat format=new DecimalFormat("0");
                         double bfb=(1.0*currentByte/countByte)*100;
                         Log.i(TAG, "progress: bfb===="+bfb);
                         String sult=format.format(bfb);
-                        textView.setText(sult+"%");
+                        dialog.setProgress(Integer.valueOf(sult));
                     }
                 });
     }
 
 
 
+    private boolean isNetWorkAvailableAndConnected(){
+       ConnectivityManager cm= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo infos = cm.getActiveNetworkInfo();
+        if (infos!=null){
+           return infos.isConnected();
+        }
+        return false;
+    }
 
 
 
