@@ -14,12 +14,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -92,6 +103,8 @@ public enum  ComeRequest implements ComeRequestIn {
 
 
 
+
+
     /*
             全局设置heads
          */
@@ -119,6 +132,70 @@ public enum  ComeRequest implements ComeRequestIn {
     public ComeRequest setTag(Object tag){
             this.tag=tag;
             return this;
+    }
+
+    /**
+     *添加https的.pfx证件验证
+     * @param is .pfx的输入流
+     * @param password 密码
+     * @param hostName 请求域名，用于校验服务器
+     * @return
+     */
+    public ComeRequest addVert(InputStream is, String password, final String hostName){
+        try {
+            //通过服务器域名验证,提高安全性
+            HostnameVerifier hostnameVerifier=new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    //验证服务器证书域名
+
+                    Log.i(TAG, "verify: hostNmae="+hostname+"===sesseion="+session.toString());
+                    if (hostname.equals(hostName)){
+                        return true;
+                    }
+                    return false;
+                }
+            };
+            char[] passwords = password.toCharArray(); // Any password will work.
+            KeyStore keyStore = newEmptyKeyStore(passwords);
+            keyStore.load(is,passwords);
+            // Use it to build an X509 trust manager.
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(
+                    KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(keyStore, passwords);
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
+
+            trustManagerFactory.init(keyStore);
+            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+            if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
+                throw new IllegalStateException("Unexpected default trust managers:"
+                        + Arrays.toString(trustManagers));
+            }
+
+            SSLContext ssContext = SSLContext.getInstance("TLS");
+            ssContext.init(keyManagerFactory.getKeyManagers(),trustManagers,null);
+
+            okClientBuilder.hostnameVerifier(hostnameVerifier)
+                    .sslSocketFactory(ssContext.getSocketFactory(), (X509TrustManager) trustManagers[0]);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return this;
+    }
+    private KeyStore newEmptyKeyStore(char[] password) throws GeneralSecurityException {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            InputStream in = null; // By convention, 'null' creates an empty key store.
+            keyStore.load(in, password);
+            return keyStore;
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
     }
 
     private <T> void request(requestMode mode, String url, RequestModel model, final RequestCallBack<T> callback){
@@ -244,7 +321,14 @@ public enum  ComeRequest implements ComeRequestIn {
     }
     private void post(Request.Builder builder,RequestModel model) {
         MediaType type=MediaType.parse(PROTOCOL_CONTENT_TYPE_FORM);
-        RequestBody body=RequestBody.create(type,getBody(model));
+        byte[] bodybyte = getBody(model);
+        RequestBody body=null;
+        if (bodybyte==null){
+            body=RequestBody.create(type,"");
+        }else {
+             body = RequestBody.create(type,bodybyte);
+
+        }
         builder.post(body);
 
     }
