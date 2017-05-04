@@ -139,9 +139,10 @@ public enum  ComeRequest implements ComeRequestIn {
      * @param is .pfx的输入流
      * @param password 密码
      * @param hostName 请求域名，用于校验服务器
+     *                 只需要添加一次即可
      * @return
      */
-    public ComeRequest addVert(InputStream is, String password, final String hostName){
+    public void addVert(InputStream is, String password, final String hostName){
         try {
             //通过服务器域名验证,提高安全性
             HostnameVerifier hostnameVerifier=new HostnameVerifier() {
@@ -185,10 +186,10 @@ public enum  ComeRequest implements ComeRequestIn {
         }
 
 
-        return this;
     }
     private KeyStore newEmptyKeyStore(char[] password) throws GeneralSecurityException {
         try {
+//            PKCS12
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
             InputStream in = null; // By convention, 'null' creates an empty key store.
             keyStore.load(in, password);
@@ -731,6 +732,7 @@ public enum  ComeRequest implements ComeRequestIn {
             try {
                 Response response=response = call.execute();
                 String result= response.body().string();
+                Log.i(TAG, "subscribe: response"+response.protocol().name());
                 Log.i(TAG, "subscribe: result="+result);
                 String requestString=response.request().toString();
                 Log.i(TAG, "subscribe: requestString==="+requestString);

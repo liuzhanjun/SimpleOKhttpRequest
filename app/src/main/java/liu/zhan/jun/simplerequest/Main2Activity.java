@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,22 +48,26 @@ public class Main2Activity extends AppCompatActivity {
     private static final String TAG = "LOGI";
     private static final String CLIENT_KET_PASSWORD = "654321@@m";
     private InputStream ins;
+    private TextView textView2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        textView2= (TextView) findViewById(R.id.textView2);
         try {
             ins=getAssets().open("server.pfx");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //添加证书，全局添加，在application中添加
+        ComeRequest.request.addVert(ins,"654321@@m","192.168.1.100");
     }
 
 
     public void httpsRequest(View view)  {
 
-        ComeRequest.request.addVert(ins,"654321@@m","192.168.1.100")
+        ComeRequest.request
                 .requestGet("https://192.168.1.100:7474/", null, new RequestCallBack<String>() {
                     @Override
                     public void before() {
@@ -71,6 +76,7 @@ public class Main2Activity extends AppCompatActivity {
 
                     @Override
                     public void success(String result) {
+                        textView2.setText(result);
                         Log.i(TAG, "success: result="+result);
                     }
 
@@ -88,7 +94,7 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     public void httpsPost(View view){
-        ComeRequest.request.addVert(ins,"654321@@m","192.168.1.100")
+        ComeRequest.request
                 .requestPost("https://192.168.1.100:7474/", null, new RequestCallBack<String>() {
                     @Override
                     public void before() {
@@ -97,6 +103,7 @@ public class Main2Activity extends AppCompatActivity {
 
                     @Override
                     public void success(String result) {
+                        textView2.setText(result);
                         Log.i(TAG, "success: result="+result);
                     }
 
