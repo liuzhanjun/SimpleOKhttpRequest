@@ -9,9 +9,9 @@ import java.lang.reflect.Type;
  * Created by 刘展俊 on 2017/4/22.
  */
 
-public abstract class RequestCallBack <T> {
+public abstract class RequestCallBack <R> {
     public abstract void before();
-    public abstract void success(T result);
+    public abstract void success(R result);
     public abstract void failure(ComeRequest.NetThrowable error);
     public abstract void finish();
     public void progress(long currentByte,long countByte){
@@ -30,7 +30,7 @@ public abstract class RequestCallBack <T> {
     private Type getSuperclassTypeParameter(Class<?> subclass) {
         Type superclass = subclass.getGenericSuperclass();
         if (superclass instanceof Class) {
-            throw new RuntimeException("Missing type parameter.");
+            throw new RuntimeException("Missing type parameter. 请在RequestCallBack上添加泛型类型");
         }
         ParameterizedType parameterized = (ParameterizedType) superclass;
         return $Gson$Types

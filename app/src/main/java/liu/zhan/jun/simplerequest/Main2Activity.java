@@ -35,6 +35,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import io.reactivex.observers.DisposableObserver;
 import liu.zhan.jun.simplerequest.comerequest.ComeRequest;
 import liu.zhan.jun.simplerequest.comerequest.RequestCallBack;
 import okhttp3.Call;
@@ -66,7 +67,6 @@ public class Main2Activity extends AppCompatActivity {
 
 
     public void httpsRequest(View view)  {
-
         ComeRequest.request
                 .requestGet("https://192.168.1.100:7474/", null, new RequestCallBack<String>() {
                     @Override
