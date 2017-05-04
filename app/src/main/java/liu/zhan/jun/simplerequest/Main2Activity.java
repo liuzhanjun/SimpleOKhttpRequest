@@ -71,7 +71,8 @@ public class Main2Activity extends AppCompatActivity {
                 .requestGet("https://192.168.1.100:7474/", null, new RequestCallBack<String>() {
                     @Override
                     public void before() {
-                        Log.i(TAG, "before: ");
+
+                        textView2.setText("正在发送请求");Log.i(TAG, "before: ");
                     }
 
                     @Override
@@ -97,7 +98,9 @@ public class Main2Activity extends AppCompatActivity {
         ComeRequest.request
                 .requestPost("https://192.168.1.100:7474/", null, new RequestCallBack<String>() {
                     @Override
-                    public void before() {
+                    public void before()
+                    {
+                        textView2.setText("正在发送请求");
                         Log.i(TAG, "before: ");
                     }
 
