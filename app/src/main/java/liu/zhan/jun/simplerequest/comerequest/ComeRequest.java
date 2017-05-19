@@ -63,7 +63,7 @@ public enum  ComeRequest implements ComeRequestIn {
         request {
             @Override
             public ComeRequest getInstance() {
-                return request;
+                return this;
             }
         };
 
@@ -111,6 +111,15 @@ public enum  ComeRequest implements ComeRequestIn {
     public void setGlobalHeads(HashMap<String, String> heads) {
         this.GlobalHeads = heads;
 
+    }
+
+    /**
+     * 清空全局heads
+     */
+    public void clearGlobalHeads(){
+        if (this.GlobalHeads!=null)
+            this.GlobalHeads.clear();
+        this.GlobalHeads=null;
     }
 
     /**
