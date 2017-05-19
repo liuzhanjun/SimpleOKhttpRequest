@@ -1,9 +1,10 @@
 # SimpleOKhttpRequest
-使用rxjava rxandroid 封装okhttp
-使用方式
-请求参数以对象的形式
-比如http://192.168.1.101:8080/DemoServlet/RequestFriendServlet?ID=1&name=赵云&age=20
-请求的参数表对应成一个对象
+使用rxjava rxandroid 封装okhttp</p>
+使用方式</p>
+请求参数以对象的形式</p>
+比如http://192.168.1.101:8080/DemoServlet/RequestFriendServlet?ID=1&name=赵云&age=20</p>
+请求的参数表对应成一个对象</p>
+@
 public class Student implements ComeRequestIn.RequestModel {
     private Integer ID;
     private String name;
