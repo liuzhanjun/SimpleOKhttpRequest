@@ -19,7 +19,7 @@ public class GirlFriend {
 	}
 
 然后就可以开始正式进行网络请求了</p>
-最后在activity中的onDestory中调用 ComeRequest.request.unsubcribe();
+最后在activity中的onDestory中调用 ComeRequest.request.unsubcribe();</p>
 1.get请求 (注意回调对象的泛型必须为引用类型，必须写明类型，不能不写)</p>
 否则会抛出Missing type parameter. 请在RequestCallBack上添加泛型类型</p>
  Student student=new Student();
