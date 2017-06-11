@@ -308,15 +308,10 @@ public enum  ComeRequest implements ComeRequestIn {
      * 取消订阅在activity中onPause 或者onDestory调用即可，不能在cancle之前调用
      */
     public void unsubcribe(){
-        if (disposables!=null) {
-            disposables.clear();
-        }
+        disposables.clear();
     }
 
     public void cancel(Object tag){
-        if (subscribe==null){
-            return;
-        }
 
         Call call=subscribe.getCall();
         if (null!=call){
@@ -338,7 +333,7 @@ public enum  ComeRequest implements ComeRequestIn {
     private void post(Request.Builder builder,RequestModel model) {
         MediaType type=MediaType.parse(PROTOCOL_CONTENT_TYPE_FORM);
         byte[] bodybyte = getBody(model);
-        RequestBody body=null;
+        RequestBody body;
         if (bodybyte==null){
             body=RequestBody.create(type,"");
         }else {
@@ -657,7 +652,9 @@ public enum  ComeRequest implements ComeRequestIn {
         for (Map.Entry<String, JsonElement> entry : entrySet) {
             String key = entry.getKey();
             String value = entry.getValue().getAsString();
-            map.put(key, value);
+            if (null!=map) {
+                map.put(key, value);
+            }
         }
         return map;
     }
@@ -703,7 +700,7 @@ public enum  ComeRequest implements ComeRequestIn {
             OkHttpClient client=ComeRequest.request.getClient();
             call=client.newCall(request);
             try {
-                Response response=response = call.execute();
+                Response response= call.execute();
                 String requestString=response.request().toString();
                 Log.i(TAG, "subscribe: requestString==="+requestString);
                 int code = response.code();
@@ -745,7 +742,7 @@ public enum  ComeRequest implements ComeRequestIn {
             OkHttpClient client=ComeRequest.request.getClient();
             call=client.newCall(request);
             try {
-                Response response=response = call.execute();
+                Response response = call.execute();
                 String result= response.body().string();
                 Log.i(TAG, "subscribe: response"+response.protocol().name());
                 Log.i(TAG, "subscribe: result="+result);

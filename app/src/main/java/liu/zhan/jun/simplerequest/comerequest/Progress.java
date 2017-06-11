@@ -5,5 +5,5 @@ package liu.zhan.jun.simplerequest.comerequest;
  */
 
 public interface Progress{
-    public void update(long cByte,long countByte);
+    void update(long cByte, long countByte);
 }

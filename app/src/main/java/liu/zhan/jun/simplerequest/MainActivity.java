@@ -41,6 +41,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.internal.connection.ConnectInterceptor;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class MainActivity extends AppCompatActivity {
     public static String TAG="LOGI";
 

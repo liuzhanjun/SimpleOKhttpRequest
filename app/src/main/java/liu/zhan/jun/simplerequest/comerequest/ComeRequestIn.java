@@ -11,18 +11,18 @@ import java.util.ArrayList;
 
 public interface ComeRequestIn{
 
-    public  void requestGet(String url,RequestModel model,RequestCallBack callBack);
+    void requestGet(String url, RequestModel model, RequestCallBack callBack);
 
-    public  void requestPost(String url,RequestModel model,RequestCallBack callback);
-    public  ComeRequestIn prepareUpload();
-    public  ComeRequestIn addFile(String name,File file);
-    public  ComeRequestIn addFiles(String name,ArrayList<File> files);
-    public  void upLoadFile(String url,RequestModel model,RequestCallBack callback);
-    public  void downLoadFile(String url,RequestModel model,String filepath,RequestCallBack callback);
+      void requestPost(String url,RequestModel model,RequestCallBack callback);
+      ComeRequestIn prepareUpload();
+      ComeRequestIn addFile(String name,File file);
+      ComeRequestIn addFiles(String name,ArrayList<File> files);
+      void upLoadFile(String url,RequestModel model,RequestCallBack callback);
+      void downLoadFile(String url,RequestModel model,String filepath,RequestCallBack callback);
 
-    public  void requestJson(String json);
+      void requestJson(String json);
 
-    public interface RequestModel{
+     interface RequestModel{
 
     }
 

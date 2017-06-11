@@ -46,8 +46,8 @@ import okhttp3.Response;
 
 public class Main2Activity extends AppCompatActivity {
 
-    private static final String TAG = "LOGI";
-    private static final String CLIENT_KET_PASSWORD = "654321@@m";
+    private  final String TAG = "LOGI";
+    private  final String CLIENT_KET_PASSWORD = "654321@@m";
     private InputStream ins;
     private TextView textView2;
 
@@ -123,10 +123,18 @@ public class Main2Activity extends AppCompatActivity {
     }
 
 
-
-
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ComeRequest.request.unsubcribe();
+        try {
+            if (ins!=null)
+            ins.close();
+            ins=null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void pfxRequest(View view){
 
