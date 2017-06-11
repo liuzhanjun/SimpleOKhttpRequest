@@ -574,10 +574,9 @@ public enum  ComeRequest implements ComeRequestIn {
             }
             HashMap<String, String> map = jsonToMap(obj);
             String s = StringParameters(map, PROTOCOL_CHARSET);
-            StringBuilder builder = new StringBuilder();
-            builder.append(url + "?");
-            builder.append(s);
-            return builder.toString();
+            String builder = url + "?" +
+                    s;
+            return builder;
 
         } else {
             return url;

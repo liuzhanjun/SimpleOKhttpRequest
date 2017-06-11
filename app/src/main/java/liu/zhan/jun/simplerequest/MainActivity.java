@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
         HashMap head=new HashMap<String,String>();
         r.setTag(Request_get);
-        r.requestGet("http://www.eclipse.org/ajdt/downloads/#43zips",null, new RequestCallBack<String>() {
+        r.requestGet("http://www.eclipse.org/ajdt/downloads/#43zips",student, new RequestCallBack<String>() {
             @Override
             public void success(String result) {
                 Log.i(TAG, "success: ============================");
