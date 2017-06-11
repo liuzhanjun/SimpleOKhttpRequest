@@ -267,11 +267,14 @@ public enum  ComeRequest implements ComeRequestIn {
 
                     @Override
                     public void onNext(T s) {
+
                         callback.success(s);
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
+
                         error(e, callback);
 
                     }
@@ -279,6 +282,7 @@ public enum  ComeRequest implements ComeRequestIn {
                     @Override
                     public void onComplete() {
                         callback.finish();
+
                     }
                 }));
 
@@ -304,7 +308,9 @@ public enum  ComeRequest implements ComeRequestIn {
      * 取消订阅在activity中onPause 或者onDestory调用即可，不能在cancle之前调用
      */
     public void unsubcribe(){
-        disposables.clear();
+        if (disposables!=null) {
+            disposables.clear();
+        }
     }
 
     public void cancel(Object tag){

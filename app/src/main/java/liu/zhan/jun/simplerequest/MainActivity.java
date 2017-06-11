@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     String Request1="request1";
     String Request_get="request1_get";
     String Request_Upload="request1_Upload";
+    private MyPostCallback callback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +67,9 @@ public class MainActivity extends AppCompatActivity {
         mContext=this;
         long id=Thread.currentThread().getId();
         Log.i(TAG, "onCreate: currentThreadId="+id);
-
+         callback = new MyPostCallback();
         textView= (TextView) findViewById(R.id.textView);
+        textView.setOnClickListener(new myOnclickListener());
         button= (Button) findViewById(R.id.btn_request);
         button_get= (Button) findViewById(R.id.btn_request_get);
         button2=findViewById(R.id.btn_upload);
@@ -125,6 +127,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    private class myOnclickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            Log.i(TAG, "onClick: =======================");
+        }
     }
 
     public void next(View view){
@@ -312,7 +323,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private class MyPostCallback extends RequestCallBack<GirlFriend> {
 
+        @Override
+        public void success(GirlFriend result) {
+            Log.i(TAG, "success: ============================");
+            textView.setText(result.getName()+" age="+result.getAge());
+
+        }
+
+        @Override
+        public void failure(ComeRequest.NetThrowable error) {
+            Log.i(TAG, "failure: ========"+error.getRequestString()+"===status="+error.getStatus()+"|====message"+error.getMessage());
+//                dialog.cancel();
+        }
+
+        @Override
+        public void finish() {
+//                dialog.cancel();
+        }
+
+        @Override
+        public void before() {
+//                Log.i(TAG, "before: ======================================");
+//                dialog=new ProgressDialog(mContext);
+//                dialog.setMessage("正在加载中...");
+//                long id=Thread.currentThread().getId();
+//                Log.i(TAG, "before: TID="+id);
+//                dialog.show();
+        }
+    }
     private void request() {
         Student student=new Student();
         student.setID(1000);
@@ -329,34 +369,8 @@ public class MainActivity extends AppCompatActivity {
         head.put("feel","yes");
         r.setTag(Request1);
         r.addHeads(head,true);
-        r.requestPost("http://192.168.1.101:8080/DemoServlet/RequestFriendServlet",student, new RequestCallBack<GirlFriend>() {
-            @Override
-            public void success(GirlFriend result) {
-                Log.i(TAG, "success: ============================");
-                textView.setText(result.getName()+" age="+result.getAge());
-            }
 
-            @Override
-            public void failure(ComeRequest.NetThrowable error) {
-                Log.i(TAG, "failure: ========"+error.getRequestString()+"===status="+error.getStatus()+"|====message"+error.getMessage());
-//                dialog.cancel();
-            }
-
-            @Override
-            public void finish() {
-//                dialog.cancel();
-            }
-
-            @Override
-            public void before() {
-//                Log.i(TAG, "before: ======================================");
-//                dialog=new ProgressDialog(mContext);
-//                dialog.setMessage("正在加载中...");
-//                long id=Thread.currentThread().getId();
-//                Log.i(TAG, "before: TID="+id);
-//                dialog.show();
-            }
-        });
+        r.requestPost("http://192.168.1.101:8080/DemoServlet/RequestFriendServlet",student,callback);
     }
 
 
