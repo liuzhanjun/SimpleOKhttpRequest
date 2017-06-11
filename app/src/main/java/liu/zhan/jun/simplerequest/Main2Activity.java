@@ -110,7 +110,6 @@ public class Main2Activity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ComeRequest.request.unsubcribe();
         try {
             if (ins!=null)
             ins.close();

@@ -230,13 +230,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        ComeRequest.request.unsubcribe();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ComeRequest.request.unsubcribe();
     }
 
     private void uploadFile(){
