@@ -11,7 +11,7 @@
 # Built application files
 *.apk
 *.ap_
-/path
+
 # Files for the ART/Dalvik VM
 *.dex
 
@@ -64,3 +64,5 @@ freeline.py
 freeline/
 freeline_project_description.json
 
+libs/
+src/main/res/drawable/
