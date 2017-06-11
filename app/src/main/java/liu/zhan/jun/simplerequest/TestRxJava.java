@@ -3,7 +3,6 @@ package liu.zhan.jun.simplerequest;
 import android.os.SystemClock;
 import android.util.Log;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Flowable;
@@ -12,10 +11,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.operators.flowable.FlowableInternalHelper;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import liu.zhan.jun.simplerequest.comerequest.ComeRequest;

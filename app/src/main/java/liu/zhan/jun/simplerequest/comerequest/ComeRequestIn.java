@@ -1,7 +1,5 @@
 package liu.zhan.jun.simplerequest.comerequest;
 
-import android.support.v4.util.ArrayMap;
-
 import java.io.File;
 import java.util.ArrayList;
 

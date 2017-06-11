@@ -161,6 +161,7 @@ public enum  ComeRequest implements ComeRequestIn {
 
                     Log.i(TAG, "verify: hostNmae="+hostname+"===sesseion="+session.toString());
                     if (hostname.equals(hostName)){
+                        Log.i(TAG, "verify: ============域名正确");
                         return true;
                     }
                     return false;
