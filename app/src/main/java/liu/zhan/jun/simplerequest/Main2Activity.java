@@ -185,8 +185,8 @@ public class Main2Activity extends AppCompatActivity {
     private KeyStore newEmptyKeyStore(char[] password) throws GeneralSecurityException {
         try {
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            InputStream in = null; // By convention, 'null' creates an empty key store.
-            keyStore.load(in, password);
+            // By convention, 'null' creates an empty key store.
+            keyStore.load(null, password);
             return keyStore;
         } catch (IOException e) {
             throw new AssertionError(e);

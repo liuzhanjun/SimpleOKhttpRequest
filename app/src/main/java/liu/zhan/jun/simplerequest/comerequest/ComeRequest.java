@@ -201,8 +201,8 @@ public enum  ComeRequest implements ComeRequestIn {
         try {
 //            PKCS12
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            InputStream in = null; // By convention, 'null' creates an empty key store.
-            keyStore.load(in, password);
+           // By convention, 'null' creates an empty key store.
+            keyStore.load(null, password);
             return keyStore;
         } catch (IOException e) {
             throw new AssertionError(e);

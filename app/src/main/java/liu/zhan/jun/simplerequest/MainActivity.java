@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         r.setGlobalHeads(globHead);
 
 
-        HashMap head=new HashMap<String,String>();
+
         r.setTag(Request_get);
         r.requestGet("http://www.eclipse.org/ajdt/downloads/#43zips",student, new RequestCallBack<String>() {
             @Override
