@@ -308,12 +308,13 @@ public enum  ComeRequest implements ComeRequestIn {
 
 
     public void cancel(Object tag){
-
-        Call call=subscribe.getCall();
-        if (null!=call){
-            Object rTag=call.request().tag();
-            if (tag.equals(rTag)){
-                call.cancel();
+        if (subscribe!=null) {
+            Call call = subscribe.getCall();
+            if (null != call) {
+                Object rTag = call.request().tag();
+                if (tag.equals(rTag)) {
+                    call.cancel();
+                }
             }
         }
     }
