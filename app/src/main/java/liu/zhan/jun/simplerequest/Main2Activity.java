@@ -22,6 +22,7 @@ import javax.net.ssl.X509TrustManager;
 
 import liu.zhan.jun.simplerequest.comerequest.ComeRequest;
 import liu.zhan.jun.simplerequest.comerequest.RequestCallBack;
+import liu.zhan.jun.simplerequest.view.CheckableTextView;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -34,6 +35,7 @@ public class Main2Activity extends AppCompatActivity {
     private  final String CLIENT_KET_PASSWORD = "654321@@m";
     private InputStream ins;
     private TextView textView2;
+    private CheckableTextView fg_t3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,21 @@ public class Main2Activity extends AppCompatActivity {
         }
         //添加证书，全局添加，在application中添加
         ComeRequest.request.addVert(ins,"654321@@m","192.168.1.100");
+
+
+        fg_t3= (CheckableTextView) findViewById(R.id.fg_t3);
+        fg_t3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "onClick: =======================================");
+                if (fg_t3.isChecked()) {
+                    fg_t3.setChecked(false);
+                }else {
+                    fg_t3.setChecked(true);
+                }
+                fg_t3.invalidate();
+            }
+        });
     }
 
 

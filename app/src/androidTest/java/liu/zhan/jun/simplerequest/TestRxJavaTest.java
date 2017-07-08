@@ -42,7 +42,8 @@ public class TestRxJavaTest {
     }
     @Test
     public void rxjavaFrow(){
-        assertEquals(0,java.rxjavaFrow());
+        java.rxjavaFrow();
+        assertEquals(0,0);
     }
 
 }
