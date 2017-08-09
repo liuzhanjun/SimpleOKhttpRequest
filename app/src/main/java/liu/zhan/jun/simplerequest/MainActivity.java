@@ -129,6 +129,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void next2(View view){
+
+        Intent intent=new Intent(this,RefundActivity.class);
+        startActivity(intent);
+    }
+
     private void request_get() {
         Student student=new Student();
         student.setID(1000);

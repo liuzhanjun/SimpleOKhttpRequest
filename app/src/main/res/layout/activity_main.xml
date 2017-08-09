@@ -76,7 +76,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Next to"
-                android:onClick="next"
+                android:onClick="next"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Next to2"
+                android:onClick="next2"
                 />
             <TextView
                 android:id="@+id/textView"
