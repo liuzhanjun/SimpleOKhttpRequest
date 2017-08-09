@@ -25,7 +25,7 @@
   </pre>
 
 然后就可以开始正式进行网络请求了</p>
-最后在activity中的onDestory中调用 <code>ComeRequest.request.unsubcribe();</code><br></br>
+最后在activity中的onDestory中调用 <code> ComeRequest.request.cancel(Request_get);ComeRequest.request.unsubcribe();</code><br></br>
 1.get请求 (注意回调对象的泛型必须为引用类型，必须写明类型，不能不写)<br></br>
 否则会抛出Missing type parameter. 请在RequestCallBack上添加泛型类型<br></br>
 
