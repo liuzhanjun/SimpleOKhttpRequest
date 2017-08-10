@@ -15,6 +15,7 @@ public class FoodListBean {
             private String food_num;
             private String food_price2;
             private String food_name;
+            private String refuse_num;
             private List<FoodAttributeBean> food_attribute;
 
             public String getOrder_food_id() {
@@ -25,7 +26,16 @@ public class FoodListBean {
                 this.order_food_id = order_food_id;
             }
 
-            public String getFood_num() {
+
+    public String getRefuse_num() {
+        return refuse_num;
+    }
+
+    public void setRefuse_num(String refuse_num) {
+        this.refuse_num = refuse_num;
+    }
+
+    public String getFood_num() {
                 return food_num;
             }
 

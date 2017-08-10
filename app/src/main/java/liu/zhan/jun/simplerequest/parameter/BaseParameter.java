@@ -7,13 +7,23 @@ import liu.zhan.jun.simplerequest.comerequest.ComeRequestIn;
  */
 
 public class BaseParameter implements ComeRequestIn.RequestModel {
-    public String device_cdoe;
+    protected String device_code;
 
-    public String getDevice_cdoe() {
-        return device_cdoe;
+    protected String getDevice_cdoe() {
+        return device_code;
     }
 
     public void setDevice_cdoe(String device_cdoe) {
-        this.device_cdoe = device_cdoe;
+        this.device_code = device_cdoe;
+    }
+
+
+
+
+    @Override
+    public String toString() {
+        return "BaseParameter{" +
+                "device_code='" + device_code + '\'' +
+                '}';
     }
 }

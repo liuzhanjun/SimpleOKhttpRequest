@@ -20,6 +20,24 @@ public  class DataBean {
         private String zhifuhao;
         private String take_num;
         private List<FoodListBean> food_list;
+    private String pay_type;//:"1",支付方式（0现金，1支付宝，2微信，3未支付,4余额，5第四方支付）
+    private String refuse;//":"0",0(未进行过退单)，1整单退款，2选择菜品退款
+
+    public String getPay_type() {
+        return pay_type;
+    }
+
+    public void setPay_type(String pay_type) {
+        this.pay_type = pay_type;
+    }
+
+    public String getRefuse() {
+        return refuse;
+    }
+
+    public void setRefuse(String refuse) {
+        this.refuse = refuse;
+    }
 
         public String getOrder_id() {
             return order_id;

@@ -43,12 +43,12 @@ public class GetOrderParameter extends BaseParameter {
     }
 
     @Override
-    public String getDevice_cdoe() {
-        return super.getDevice_cdoe();
-    }
-
-    @Override
-    public void setDevice_cdoe(String device_cdoe) {
-        super.setDevice_cdoe(device_cdoe);
+    public String toString() {
+        return "GetOrderParameter{" +
+                "_id='" + _id + '\'' +
+                ", order_sn='" + order_sn + '\'' +
+                ", zhifuhao='" + zhifuhao + '\'' +
+                ", start_time='" + start_time + '\'' +
+                '}';
     }
 }

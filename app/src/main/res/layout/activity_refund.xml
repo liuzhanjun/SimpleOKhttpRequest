@@ -1,9 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="liu.zhan.jun.simplerequest.RefundActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        android:layout_marginLeft="20dp">
+        <com.jaredrummler.materialspinner.MaterialSpinner
+            android:id="@+id/query_type"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"/>
 
-</android.support.constraint.ConstraintLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text=":"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/query_parameter"
+            android:layout_width="300dp"
+            android:layout_margin="10dp"
+            android:layout_height="match_parent"
+            android:maxLength="32"
+            android:background="@drawable/edit_text_bg_shape"/>
+
+        <Button
+            android:id="@+id/btn_query"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:text="查询"
+            android:layout_margin="10dp"
+            android:background="@drawable/query_click_press_selctor"/>
+        <com.jaredrummler.materialspinner.MaterialSpinner
+            android:id="@+id/query_time"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"/>
+
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_refund_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+    </LinearLayout>

@@ -324,8 +324,14 @@ public class MyConfig {
      * http://shop.founpad.com/index.php/api/Eleme/eleme_cancel_order
      */
     public final static String eleme_cancel_order = BASE_URL + "api/Eleme/eleme_cancel_order";
-    /*获得退单信息
+    /*获得可以退单的信息
     http://host/index.php/Api/Refuse/get_order
          */
-    public static final String get_order="Api/Refuse/get_order";
+    public static final String get_order="api/Refuse/get_order";
+    /**
+     * 退单请求
+     */
+    public static final String refuse="api/Refuse/refuse";
+
+
 }
