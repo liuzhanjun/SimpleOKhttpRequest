@@ -36,6 +36,7 @@ import liu.zhan.jun.simplerequest.parameter.GetOrderParameter;
 import liu.zhan.jun.simplerequest.parameter.RefuseParameter;
 import liu.zhan.jun.simplerequest.respons.BaseResponse;
 import liu.zhan.jun.simplerequest.respons.GetOrderResponse;
+import liu.zhan.jun.simplerequest.respons.RefundResponse;
 import liu.zhan.jun.simplerequest.utils.StoreSp;
 import liu.zhan.jun.simplerequest.view.EditDialog;
 import liu.zhan.jun.simplerequest.view.LoadProgressDialog;
@@ -236,16 +237,16 @@ public class RefundActivity extends AppCompatActivity {
     private void refundRequest(RefuseParameter parameter) {
         parameter.setDevice_cdoe(StoreSp.getMacAdress(getApplicationContext()));
         Log.i(TAG, "refundRequest: 退款参数"+parameter.toString());
-        ComeRequest.request.setTag(MyConfig.refuse).requestPost(MyConfig.BASE_URL + MyConfig.refuse, parameter, new RequestCallBack<BaseResponse>() {
+        ComeRequest.request.setTag(MyConfig.refuse).requestPost(MyConfig.BASE_URL + MyConfig.refuse, parameter, new RequestCallBack<RefundResponse>() {
             @Override
             public void before() {
                 Log.i(TAG, "before: 开始退单");
             }
 
             @Override
-            public void success(BaseResponse result) {
+            public void success(RefundResponse result) {
                 Toast.makeText(RefundActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
-                Log.i(TAG, "success: "+result.toString());
+                Log.i(TAG, "success: "+new Gson().toJson(result));
             }
 
             @Override

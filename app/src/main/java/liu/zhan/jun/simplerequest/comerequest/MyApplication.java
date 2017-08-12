@@ -17,10 +17,10 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (BuildConfig.DEBUG) {
-            LeakCanary.install(this);
-
-        }
+//        if (BuildConfig.DEBUG) {
+//            LeakCanary.install(this);
+//
+//        }
         String mac = Macuits.getMacAddress(getApplicationContext());
         StoreSp.storeMacAdress(getApplicationContext(), mac);
     }
