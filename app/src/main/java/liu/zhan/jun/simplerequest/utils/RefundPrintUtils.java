@@ -164,7 +164,72 @@ public class RefundPrintUtils {
 
 
     }
+    public static String dataStringSet3(String food_name, String food_num, String food_price, int num, int size) {
+        String result = null;
+        StringBuffer sb = new StringBuffer();
+        char[] name_arr = food_name.toCharArray();//字符數
+        Log.d("abcd", "name_arr: "+name_arr.length);
+        char[] num_arr = food_num.toCharArray();
+        Log.d("abcd", "num_arr: "+num_arr.length);
+        char[] price_arr = food_price.toCharArray();
+        Log.d("abcd", "num_arr: "+price_arr.length);
 
+        //菜品
+        sb.append(food_name);
+        int znum = 0;
+        for (int i = 0; i < name_arr.length; i++) {
+            if (isZhongWen(name_arr[i])){
+                znum++;//中文個數
+            }
+        }
+
+        int kong = 28- 2*znum - (name_arr.length - znum)*1;
+
+        for (int i = 0; i < kong; i++) {
+            sb.append(" ");
+        }
+
+        //数量
+        znum = 0;
+        kong = 0;
+        for (int i = 0; i < num_arr.length; i++) {
+            if (isZhongWen(num_arr[i])){
+                znum++;//中文個數
+            }
+        }
+        kong = 8- 2*znum - (num_arr.length - znum)*1;
+
+        for (int i = 0; i < kong; i++) {
+            sb.append(" ");
+        }
+        sb.append(food_num);
+
+        //价格
+        znum = 0;
+        kong = 0;
+        for (int i = 0; i < price_arr.length; i++) {
+            if (isZhongWen(price_arr[i])){
+                znum++;//中文個數
+            }
+        }
+        kong = 10- 2*znum - (price_arr.length - znum)*1;
+
+        for (int i = 0; i < kong; i++) {
+            sb.append(" ");
+        }
+        sb.append(price_arr);
+
+        result = sb.toString();
+        return result;
+    }
+
+
+    public static boolean  isZhongWen(char name){
+        if((name >= 0x4e00)&&(name <= 0x9fbb)) {
+            return  true;
+        }
+        return false;
+    }
 
     public boolean connection(String ipaddress, int netport) {
         SocketAddress ipe = new InetSocketAddress(ipaddress, netport);
@@ -213,6 +278,7 @@ public class RefundPrintUtils {
                 .PrintTextLine("下单时间：" + time.toString("yyyy-MM-dd HH:mm:ss") )
                 .PrintTextLine("订单号  ：" + bean.getOrder_sn() )
                 .PrintTextLine("----------------------------------------------" );
+
         String reason = "";
         if (type == 0) {
             if (foodt != null) {
@@ -224,16 +290,16 @@ public class RefundPrintUtils {
         }
         printUtils.PrintTextLine("原因:" + reason , 1, 3, 0)
                 .PrintTextLine("----------------------------------------------" );
-
+        printUtils.PrintText("  菜品                          份数      价格  ",0,0,0);
 
         //打印主菜以及这个打印机主菜的属性
         for (FoodListBean food : foods) {
             //打印主菜
-            printUtils.PrintTextLine(food.getFood_name() + "               " + food.getFood_num() + "           -" + food.getFood_price2() );
+            printUtils.PrintText(printUtils.dataStringSet3(food.getFood_name(),food.getFood_num(),food.getFood_price2(),48,0),0,1,0).PrintEnter();
             StringBuffer attrs = new StringBuffer();
             for (FoodAttributeBean foodAttributeBean : food.getFood_attribute()) {
 
-                attrs.append("  <" + foodAttributeBean.getFood_attribute_name() + ">");
+                attrs.append("<" + foodAttributeBean.getFood_attribute_name() + ">");
 
             }
             printUtils.PrintTextLine(attrs.toString() );

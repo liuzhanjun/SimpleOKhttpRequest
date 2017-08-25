@@ -1,5 +1,7 @@
 package liu.zhan.jun.simplerequest.utils;
 
+import android.util.Log;
+
 import java.nio.charset.Charset;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -20,7 +22,72 @@ public class PrintUtils {
     public byte[] getAllCMD() {
         return ByteTo_byte(allCMD);
     }
+    public String dataStringSet3(String food_name, String food_num, String food_price, int num, int size) {
+        String result = null;
+        StringBuffer sb = new StringBuffer();
+        char[] name_arr = food_name.toCharArray();//字符數
+        Log.d("abcd", "name_arr: "+name_arr.length);
+        char[] num_arr = food_num.toCharArray();
+        Log.d("abcd", "num_arr: "+num_arr.length);
+        char[] price_arr = food_price.toCharArray();
+        Log.d("abcd", "num_arr: "+price_arr.length);
 
+        //菜品
+        sb.append(food_name);
+        int znum = 0;
+        for (int i = 0; i < name_arr.length; i++) {
+            if (isZhongWen(name_arr[i])){
+                znum++;//中文個數
+            }
+        }
+
+        int kong = 28- 2*znum - (name_arr.length - znum)*1;
+
+        for (int i = 0; i < kong; i++) {
+            sb.append(" ");
+        }
+
+        //数量
+        znum = 0;
+        kong = 0;
+        for (int i = 0; i < num_arr.length; i++) {
+            if (isZhongWen(num_arr[i])){
+                znum++;//中文個數
+            }
+        }
+        kong = 8- 2*znum - (num_arr.length - znum)*1;
+
+        for (int i = 0; i < kong; i++) {
+            sb.append(" ");
+        }
+        sb.append(food_num);
+
+        //价格
+        znum = 0;
+        kong = 0;
+        for (int i = 0; i < price_arr.length; i++) {
+            if (isZhongWen(price_arr[i])){
+                znum++;//中文個數
+            }
+        }
+        kong = 10- 2*znum - (price_arr.length - znum)*1;
+
+        for (int i = 0; i < kong; i++) {
+            sb.append(" ");
+        }
+        sb.append(price_arr);
+
+        result = sb.toString();
+        return result;
+    }
+
+
+    public static boolean  isZhongWen(char name){
+        if((name >= 0x4e00)&&(name <= 0x9fbb)) {
+            return  true;
+        }
+        return false;
+    }
     /**
      * 清空所有
      */

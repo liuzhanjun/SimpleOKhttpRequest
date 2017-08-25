@@ -34,35 +34,35 @@ public class ExampleInstrumentedTest {
                 "        \"food_attribute\":[\n" +
                 "          {\n" +
                 "            \"food_attribute_name\":\"可乐\",\n" +
-                "            \"food_attribute_price\":\"0.01\",\n" +
+                "            \"food_attribute_price\":\"0.00\",\n" +
                 "            \"printer_ip\":\"192.168.1.203\"\n" +
                 "          },\n" +
                 "          {\n" +
                 "            \"food_attribute_name\":\"薯条\",\n" +
-                "            \"food_attribute_price\":\"0.02\",\n" +
+                "            \"food_attribute_price\":\"0.00\",\n" +
                 "            \"printer_ip\":\"192.168.1.203\"\n" +
                 "          },\n" +
                 "          {\n" +
                 "            \"food_attribute_name\":\"辣条\",\n" +
-                "            \"food_attribute_price\":\"0.03\",\n" +
+                "            \"food_attribute_price\":\"0.00\",\n" +
                 "            \"printer_ip\":\"192.168.1.203\"\n" +
                 "          },\n" +
                 "          {\n" +
                 "            \"food_attribute_name\":\"32度\",\n" +
-                "            \"food_attribute_price\":\"0.04\",\n" +
+                "            \"food_attribute_price\":\"0.00\",\n" +
                 "            \"printer_ip\":\"192.168.1.203\"\n" +
                 "          },\n" +
                 "          {\n" +
                 "            \"food_attribute_name\":\"250ml\",\n" +
                 "            \"food_attribute_price\":\"0.00\",\n" +
-                "            \"printer_ip\":\"192.168.1.202\"\n" +
+                "            \"printer_ip\":\"192.168.1.203\"\n" +
                 "          }\n" +
                 "        ],\n" +
                 "        \"food_name\":\"XCZ\",\n" +
                 "        \"food_num\":\"1\",\n" +
                 "        \"food_price2\":\"0.01\",\n" +
                 "        \"order_food_id\":\"295401\",\n" +
-                "        \"printer_ip\":\"192.168.1.202\",\n" +
+                "        \"printer_ip\":\"192.168.1.203\",\n" +
                 "        \"refuse_num\":\"1\",\n" +
                 "        \"refuse_reason\":\"ppppp\"\n" +
                 "      },\n" +
@@ -70,18 +70,18 @@ public class ExampleInstrumentedTest {
                 "        \"food_attribute\":[\n" +
                 "          {\n" +
                 "            \"food_attribute_name\":\"可乐\",\n" +
-                "            \"food_attribute_price\":\"0.05\",\n" +
-                "            \"printer_ip\":\"192.168.1.203\"\n" +
+                "            \"food_attribute_price\":\"0.00\",\n" +
+                "            \"printer_ip\":\"192.168.1.202\"\n" +
                 "          },\n" +
                 "          {\n" +
                 "            \"food_attribute_name\":\"薯条\",\n" +
-                "            \"food_attribute_price\":\"0.06\",\n" +
-                "            \"printer_ip\":\"192.168.1.203\"\n" +
+                "            \"food_attribute_price\":\"0.00\",\n" +
+                "            \"printer_ip\":\"192.168.1.202\"\n" +
                 "          },\n" +
                 "          {\n" +
                 "            \"food_attribute_name\":\"辣条\",\n" +
-                "            \"food_attribute_price\":\"0.07\",\n" +
-                "            \"printer_ip\":\"192.168.1.203\"\n" +
+                "            \"food_attribute_price\":\"0.00\",\n" +
+                "            \"printer_ip\":\"192.168.1.202\"\n" +
                 "          },\n" +
                 "          {\n" +
                 "            \"food_attribute_name\":\"32度\",\n" +
