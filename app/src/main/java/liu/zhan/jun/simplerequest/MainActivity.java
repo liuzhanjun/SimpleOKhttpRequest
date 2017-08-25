@@ -11,8 +11,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import java.io.File;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     String Request_Upload="request1_Upload";
     private MyPostCallback callback;
 
+    private ImageView img;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         cancel_button_get= (Button) findViewById(R.id.cancel_btn_request_get);
         cancel_button2=findViewById(R.id.cancel_btn_upload);
         cancel_btn_downLoad= (Button) findViewById(R.id.cancel_btn_download);
+        img= (ImageView) findViewById(R.id.img);
         //post请求
         RxView.clicks(button).subscribe(new Consumer<Object>() {
             @Override
@@ -70,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
                 request();
             }
         });
+        File file=new File(Environment.getExternalStorageDirectory()+"/Download/tupianp.png");
+        Glide.with(mContext).load(file).into(img);
+
         /**
          * gen请求
          */
@@ -183,10 +190,10 @@ public class MainActivity extends AppCompatActivity {
      * 下载
      */
     private void downLoad() {
-        File file=new File(Environment.getExternalStorageDirectory()+"/Download/那些年，我们一起追的女孩.mp4");
+        final File file=new File(Environment.getExternalStorageDirectory()+"/Download/tupianp.png");
 //        File file=new File(Environment.getExternalStorageDirectory()+"/Download/88.jpg");
         Log.i(TAG, "downLoad: 下载");
-        ComeRequest.request.downLoadFile("http://192.168.1.101:8080/DemoServlet/upload/nxn.mp4", null,file.getAbsolutePath(), new RequestCallBack<FileItem>() {
+        ComeRequest.request.downLoadFile("http://shop.founpad.com/Public/Uploads/ICO/2017-08-24/599ea0a48d6b4.png", null,file.getAbsolutePath(), new RequestCallBack<FileItem>() {
             @Override
             public void before() {
                 Log.i(TAG, "before: 开始下载");
@@ -205,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
             public void success(FileItem result) {
                 Log.i(TAG, "success: 下载成功 type="+result.getType());
                 dialog.setProgress(100);
+                Glide.with(mContext).load(file).into(img);
             }
 
             @Override
